@@ -7,7 +7,6 @@
 [![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
-> 一个适合大二学生用于课程作业、后端练手和大厂后端实习面试展示的 FastAPI 个人博客接口项目。
 
 ## 项目简介
 
