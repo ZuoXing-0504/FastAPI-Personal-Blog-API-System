@@ -1,28 +1,42 @@
 # FastAPI Personal Blog API System
 
-> 一个适合大二学生用于练手、作业展示和后端实习面试展示的 FastAPI 个人博客接口项目。
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org/)
+[![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
+
+> 一个适合大二学生用于课程作业、后端练手和大厂后端实习面试展示的 FastAPI 个人博客接口项目。
 
 ## 项目简介
 
-这是一个基于 `FastAPI + MySQL + SQLAlchemy + JWT` 的个人博客后端接口系统，围绕“用户认证、文章管理、分类管理、权限控制、统一异常处理、参数校验”这几类典型后端能力进行完整实现。
+这是一个基于 `FastAPI + MySQL + SQLAlchemy + JWT` 的个人博客后端接口系统，围绕后端开发中最常见的能力进行完整实现：
 
-项目目标不是只做几个能跑通的接口，而是尽量贴近真实后端开发中的工程化写法：
+- 用户注册、登录、JWT 权限认证
+- 文章增删改查、作者权限控制
+- 分类管理与文章绑定
+- 分页查询、分类筛选、阅读量统计
+- 参数校验、统一返回格式、全局异常处理
+- 自动生成 Swagger / ReDoc 接口文档
 
-- 分层目录结构清晰，便于扩展
-- 使用 ORM 操作 MySQL，避免手写大量 SQL
-- 使用 JWT 做登录鉴权和接口权限拦截
-- 使用 Pydantic 做请求参数校验
-- 使用统一返回格式和全局异常处理提升接口规范性
-- 支持 Swagger / ReDoc 自动生成接口文档
+这个项目不只是“能跑通几个接口”，而是尽量按真实后端项目的工程化方式组织代码，更适合拿来展示你的后端基础和项目完成度。
 
 ## 项目亮点
 
-- 面向实习面试场景：覆盖登录注册、权限控制、文章 CRUD、分类管理等高频后端考点
-- 结构清晰：按 `api / core / crud / db / models / schemas / exceptions` 分层
-- 权限严格：未登录无法发文，只有作者本人可以修改和删除文章
-- 功能完整：支持分页查询、分类筛选、阅读量统计
-- 参数校验友好：用户名、密码、文章字段都有明确校验规则
-- 返回规范统一：所有接口都使用统一 JSON 结构
+- 面向实习面试场景，覆盖登录鉴权、权限拦截、CRUD、分页、异常处理等高频考点
+- 目录分层清晰，便于后续扩展评论、标签、上传、缓存等模块
+- 使用 JWT 做接口保护，未登录和越权场景都有明确拦截
+- 使用 Pydantic 做请求参数校验，错误提示统一且友好
+- 统一 `code / msg / data` 返回结构，接口风格规范
+- 支持 Swagger 文档直接演示完整业务链路
+
+## 快速入口
+
+- 在线仓库: [GitHub Repository](https://github.com/ZuoXing-0504/FastAPI-Personal-Blog-API-System)
+- 接口测试文档: [docs/API_TESTING.md](./docs/API_TESTING.md)
+- Postman 集合: [docs/FastAPI-Personal-Blog.postman_collection.json](./docs/FastAPI-Personal-Blog.postman_collection.json)
+- 开源协议: [LICENSE](./LICENSE)
 
 ## 技术栈
 
@@ -36,9 +50,9 @@
 - PyMySQL
 - CORS Middleware
 
-## 功能模块
+## 功能清单
 
-### 1. 用户模块
+### 用户模块
 
 - 用户注册
 - 用户登录
@@ -47,35 +61,70 @@
 - 获取当前登录用户信息
 - 未登录接口权限拦截
 
-### 2. 文章模块
+### 文章模块
 
 - 发布文章
 - 查看文章列表
-- 文章分页查询
-- 按分类筛选文章
+- 分页查询
+- 按分类筛选
 - 查看文章详情
-- 阅读量自动统计
+- 阅读量自动加 1
 - 修改文章
 - 删除文章
 - 仅作者本人可修改或删除
 
-### 3. 分类模块
+### 分类模块
 
 - 创建分类
 - 查询分类列表
 - 发布文章时绑定分类
 
-### 4. 通用模块
+### 通用能力
 
 - 统一返回格式
 - 全局异常处理
-- 请求参数自动校验
+- 自动请求参数校验
 - 自动生成接口文档
 - CORS 跨域支持
 
+## 架构概览
+
+```mermaid
+flowchart LR
+    A["Client / Swagger / Postman / curl"] --> B["FastAPI Router"]
+    B --> C["Dependencies"]
+    C --> D["JWT Auth"]
+    B --> E["CRUD Layer"]
+    E --> F["SQLAlchemy ORM"]
+    F --> G[("MySQL 8.0")]
+    B --> H["Unified Response"]
+    B --> I["Global Exception Handler"]
+    B --> J["Pydantic Validation"]
+```
+
+## 演示流程图
+
+```mermaid
+flowchart TD
+    A["启动服务"] --> B["注册用户"]
+    B --> C["登录获取 Token"]
+    C --> D["创建分类"]
+    D --> E["发布文章"]
+    E --> F["分页查询文章列表"]
+    F --> G["查看文章详情"]
+    G --> H["阅读量 +1"]
+    H --> I["作者本人修改文章"]
+    I --> J["作者本人删除文章"]
+    C --> K["另一个账号登录"]
+    K --> L["尝试修改他人文章"]
+    L --> M["403 无权限"]
+    A --> N["未登录访问受保护接口"]
+    N --> O["401 未授权"]
+```
+
 ## 统一返回格式
 
-项目中的接口统一返回如下结构：
+所有接口统一返回如下结构：
 
 ```json
 {
@@ -140,10 +189,14 @@ FastAPI-Personal-Blog-API-System
 │  │  ├─ category.py
 │  │  └─ article.py
 │  └─ main.py
+├─ docs
+│  ├─ API_TESTING.md
+│  └─ FastAPI-Personal-Blog.postman_collection.json
 ├─ sql
 │  └─ blog_schema.sql
 ├─ .env.example
 ├─ .gitignore
+├─ LICENSE
 ├─ main.py
 ├─ README.md
 └─ requirements.txt
@@ -153,23 +206,23 @@ FastAPI-Personal-Blog-API-System
 
 项目核心包含三张表：
 
-- `users`：用户表
-- `categories`：分类表
-- `articles`：文章表
+- `users`: 用户表
+- `categories`: 分类表
+- `articles`: 文章表
 
-其中：
+关系说明：
 
 - 一个用户可以发布多篇文章
 - 一篇文章只能属于一个分类
 - 删除用户时，其文章会级联删除
 
-建表 SQL 已提供在：
+建表 SQL 位于：
 
 ```text
 sql/blog_schema.sql
 ```
 
-## 快速启动
+## 本地启动
 
 ### 1. 克隆项目
 
@@ -178,7 +231,7 @@ git clone https://github.com/ZuoXing-0504/FastAPI-Personal-Blog-API-System.git
 cd FastAPI-Personal-Blog-API-System
 ```
 
-### 2. 创建虚拟环境
+### 2. 创建并激活虚拟环境
 
 ```bash
 python -m venv .venv
@@ -204,7 +257,7 @@ pip install -r requirements.txt
 
 ### 4. 配置环境变量
 
-复制 `.env.example` 为 `.env`，然后修改数据库连接信息：
+复制 `.env.example` 为 `.env`，并修改数据库连接信息：
 
 Windows:
 
@@ -234,88 +287,82 @@ ACCESS_TOKEN_EXPIRE_MINUTES=120
 
 ### 5. 初始化数据库
 
-先确保本地已经安装并启动 MySQL 8，然后执行：
+请先确保本地已安装并启动 MySQL 8，然后执行：
 
 ```bash
 mysql -uroot -p123456 < sql/blog_schema.sql
 ```
 
-### 6. 启动项目
+### 6. 启动服务
 
 ```bash
 uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-启动成功后访问：
+启动成功后可访问：
 
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
 - Health Check: `http://127.0.0.1:8000/health`
 
-## 主要接口说明
+## 主要接口
 
 ### 用户接口
 
-- `POST /api/v1/auth/register`：用户注册
-- `POST /api/v1/auth/login`：用户登录
-- `GET /api/v1/users/me`：获取当前登录用户
+- `POST /api/v1/auth/register`: 用户注册
+- `POST /api/v1/auth/login`: 用户登录
+- `GET /api/v1/users/me`: 获取当前登录用户
 
 ### 分类接口
 
-- `POST /api/v1/categories`：创建分类
-- `GET /api/v1/categories`：查询分类列表
+- `POST /api/v1/categories`: 创建分类
+- `GET /api/v1/categories`: 查询分类列表
 
 ### 文章接口
 
-- `POST /api/v1/articles`：发布文章
-- `GET /api/v1/articles`：分页查询文章列表
-- `GET /api/v1/articles/{article_id}`：查看文章详情
-- `PUT /api/v1/articles/{article_id}`：修改文章
-- `DELETE /api/v1/articles/{article_id}`：删除文章
+- `POST /api/v1/articles`: 发布文章
+- `GET /api/v1/articles`: 分页查询文章列表
+- `GET /api/v1/articles/{article_id}`: 查询文章详情
+- `PUT /api/v1/articles/{article_id}`: 修改文章
+- `DELETE /api/v1/articles/{article_id}`: 删除文章
 
-## 演示流程
+## 接口测试说明
 
-这套项目可以完整演示下面这条后端业务链路：
+如果你想直接照着文档完成整套演示流程，可以看：
 
-1. 启动服务并打开 Swagger 文档
-2. 注册用户
-3. 登录获取 JWT Token
-4. 在 Swagger 中点击右上角 `Authorize` 填入 `Bearer <token>`
-5. 创建文章分类
-6. 发布一篇文章
-7. 分页查询文章列表，并按分类筛选
-8. 查看文章详情，确认阅读量自动加 1
-9. 修改自己发布的文章
-10. 删除自己发布的文章
-11. 使用另一个账号尝试修改该文章，确认被 403 拒绝
-12. 不带 Token 调用需要登录的接口，确认返回 401
+- [curl 接口测试文档](./docs/API_TESTING.md)
+- [Postman Collection](./docs/FastAPI-Personal-Blog.postman_collection.json)
 
-## 权限说明
+这两份文档覆盖了：
 
-- 未登录用户不能创建分类、发布文章、修改文章、删除文章
-- 登录用户只能修改和删除自己创建的文章
-- Token 过期、无效或缺失时会直接返回 401
+- 注册、登录、获取 token
+- 创建分类
+- 发布文章
+- 分页查询文章列表
+- 查询文章详情
+- 修改和删除自己的文章
+- 未登录访问受保护接口
+- 使用另一个账号验证越权失败
 
-## 参数校验规则
+## 面试演示 Checklist
 
-### 用户
+- 启动服务并打开 Swagger 文档
+- 注册用户并登录获取 Token
+- 点击 Swagger 右上角 `Authorize`，填入 `Bearer <token>`
+- 创建分类
+- 发布文章
+- 分页查询文章列表并按分类筛选
+- 查看文章详情并确认阅读量加 1
+- 修改自己的文章
+- 删除自己的文章
+- 使用另一个账号尝试修改该文章并验证返回 403
+- 未登录访问受保护接口并验证返回 401
 
-- 用户名：3-20 位，仅支持字母、数字、下划线
-- 密码：6-32 位，且必须同时包含字母和数字
-- 邮箱：必须符合邮箱格式
+## 简历描述示例
 
-### 文章
+你可以这样写这个项目：
 
-- 标题不能为空，最长 200 字符
-- 摘要最长 500 字符
-- 内容不能为空
-- 分类 ID 必须为正整数
-
-## 适合写进简历的描述
-
-你可以把这个项目概括为：
-
-> 基于 FastAPI、MySQL、SQLAlchemy、JWT 独立完成个人博客后端接口系统开发，实现用户注册登录、文章与分类管理、权限控制、统一异常处理、参数校验、分页查询与阅读量统计，并通过 Swagger 自动生成接口文档。
+> 基于 FastAPI、MySQL、SQLAlchemy 和 JWT 独立完成个人博客后端接口系统开发，实现用户注册登录、文章与分类管理、权限控制、统一异常处理、参数校验、分页查询与阅读量统计，并通过 Swagger 自动生成接口文档，支持完整的接口演示与测试。
 
 ## 后续可扩展方向
 
@@ -330,4 +377,4 @@ uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 
 ## License
 
-本项目仅用于学习、课程作业展示和个人技术积累。
+本项目使用 [MIT License](./LICENSE) 开源，适合学习、二次开发和个人作品展示。
