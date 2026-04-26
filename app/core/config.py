@@ -1,6 +1,7 @@
 """Application settings."""
 
 from functools import lru_cache
+from typing import Optional
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -11,13 +12,17 @@ class Settings(BaseSettings):
 
     app_name: str = "FastAPI Personal Blog"
     app_version: str = "1.0.0"
+    app_env: str = "development"
     debug: bool = True
+    sql_echo: bool = False
+    db_auto_create_tables: bool = False
 
     api_v1_prefix: str = "/api/v1"
     docs_url: str = "/docs"
     redoc_url: str = "/redoc"
     openapi_url: str = "/openapi.json"
 
+    database_url: Optional[str] = None
     mysql_host: str = "127.0.0.1"
     mysql_port: int = 3306
     mysql_user: str = "root"
@@ -42,11 +47,18 @@ class Settings(BaseSettings):
 
     @property
     def sqlalchemy_database_uri(self) -> str:
-        """Build the SQLAlchemy database URI for MySQL."""
+        """Return an explicit database URL or build one from MySQL settings."""
+        if self.database_url:
+            return self.database_url
         return (
             f"mysql+pymysql://{self.mysql_user}:{self.mysql_password}"
             f"@{self.mysql_host}:{self.mysql_port}/{self.mysql_db}?charset=utf8mb4"
         )
+
+    @property
+    def is_development(self) -> bool:
+        """Return whether the app is running in development mode."""
+        return self.app_env.lower() == "development"
 
 
 @lru_cache

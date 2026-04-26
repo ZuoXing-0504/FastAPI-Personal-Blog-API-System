@@ -1,0 +1,45 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: fastapi-blog-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: fastapi_blog
+      MYSQL_USER: blog_user
+      MYSQL_PASSWORD: blog_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi-blog-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_ENV: production
+      DEBUG: "false"
+      SQL_ECHO: "false"
+      DB_AUTO_CREATE_TABLES: "false"
+      DATABASE_URL: mysql+pymysql://blog_user:blog_password@db:3306/fastapi_blog?charset=utf8mb4
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      JWT_SECRET_KEY: change-this-in-production
+      ACCESS_TOKEN_EXPIRE_MINUTES: 120
+      CORS_ALLOW_ORIGINS: ["*"]
+    ports:
+      - "8000:8000"
+
+volumes:
+  mysql_data:

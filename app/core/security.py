@@ -1,12 +1,13 @@
 """Security helpers for password hashing and JWT handling."""
 
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any, Optional
 
 import jwt
 from passlib.context import CryptContext
 
 from app.core.config import settings
+from app.core.datetime import utc_now
 
 # Use PBKDF2-SHA256 to avoid passlib/bcrypt compatibility issues on newer
 # Python and bcrypt versions while still providing salted secure hashing.
@@ -25,13 +26,14 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(subject: Any, expires_delta: Optional[timedelta] = None) -> str:
     """Create a signed JWT access token."""
-    expire = datetime.utcnow() + (
+    issued_at = utc_now()
+    expire = issued_at + (
         expires_delta or timedelta(minutes=settings.access_token_expire_minutes)
     )
     payload = {
         "sub": str(subject),
         "exp": expire,
-        "iat": datetime.utcnow(),
+        "iat": issued_at,
     }
     return jwt.encode(
         payload,

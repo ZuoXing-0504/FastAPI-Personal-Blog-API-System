@@ -1,7 +1,7 @@
 """User schemas."""
 
-from datetime import datetime
 import re
+from datetime import datetime
 
 from pydantic import EmailStr, Field, field_validator
 

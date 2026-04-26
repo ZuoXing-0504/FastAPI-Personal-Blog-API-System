@@ -5,6 +5,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org/)
 [![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![CI](https://img.shields.io/github/actions/workflow/status/ZuoXing-0504/FastAPI-Personal-Blog-API-System/ci.yml?branch=main&label=CI)](https://github.com/ZuoXing-0504/FastAPI-Personal-Blog-API-System/actions)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
 
@@ -29,12 +30,14 @@
 - 使用 Pydantic 做请求参数校验，错误提示统一且友好
 - 统一 `code / msg / data` 返回结构，接口风格规范
 - 支持 Swagger 文档直接演示完整业务链路
+- 已接入 Alembic、pytest、Docker 和 GitHub Actions，具备更正式的工程化能力
 
 ## 快速入口
 
 - 在线仓库: [GitHub Repository](https://github.com/ZuoXing-0504/FastAPI-Personal-Blog-API-System)
 - 接口测试文档: [docs/API_TESTING.md](./docs/API_TESTING.md)
 - Postman 集合: [docs/FastAPI-Personal-Blog.postman_collection.json](./docs/FastAPI-Personal-Blog.postman_collection.json)
+- CI 工作流: [GitHub Actions](https://github.com/ZuoXing-0504/FastAPI-Personal-Blog-API-System/actions)
 - 开源协议: [LICENSE](./LICENSE)
 
 ## 技术栈
@@ -85,6 +88,13 @@
 - 自动请求参数校验
 - 自动生成接口文档
 - CORS 跨域支持
+
+### 工程化增强
+
+- Alembic 数据库迁移
+- pytest 接口测试
+- Docker / docker-compose 容器化部署
+- GitHub Actions 自动化校验
 
 ## 架构概览
 
@@ -188,16 +198,35 @@ FastAPI-Personal-Blog-API-System
 │  │  ├─ category.py
 │  │  └─ article.py
 │  └─ main.py
+├─ alembic
+│  ├─ env.py
+│  ├─ script.py.mako
+│  └─ versions
+├─ .github
+│  └─ workflows
+│     └─ ci.yml
 ├─ docs
 │  ├─ API_TESTING.md
 │  └─ FastAPI-Personal-Blog.postman_collection.json
+├─ docker
+│  └─ start.sh
 ├─ sql
 │  └─ blog_schema.sql
+├─ tests
+│  ├─ conftest.py
+│  ├─ test_auth.py
+│  └─ test_articles.py
 ├─ .env.example
+├─ .dockerignore
 ├─ .gitignore
+├─ alembic.ini
+├─ docker-compose.yml
+├─ Dockerfile
 ├─ LICENSE
 ├─ main.py
+├─ pyproject.toml
 ├─ README.md
+├─ requirements-dev.txt
 └─ requirements.txt
 ```
 
@@ -286,10 +315,18 @@ ACCESS_TOKEN_EXPIRE_MINUTES=120
 
 ### 5. 初始化数据库
 
+推荐使用 Alembic 管理数据库结构，而不是依赖应用启动时自动建表。
+
 请先确保本地已安装并启动 MySQL 8，然后执行：
 
 ```bash
 mysql -uroot -p123456 < sql/blog_schema.sql
+```
+
+或者直接使用迁移命令：
+
+```bash
+alembic upgrade head
 ```
 
 ### 6. 启动服务
@@ -303,6 +340,26 @@ uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
 - Health Check: `http://127.0.0.1:8000/health`
+
+## 数据库迁移
+
+初始化数据库：
+
+```bash
+alembic upgrade head
+```
+
+创建新迁移：
+
+```bash
+alembic revision -m "describe your migration"
+```
+
+如果后续想启用自动生成迁移，可继续扩展：
+
+```bash
+alembic revision --autogenerate -m "describe your migration"
+```
 
 ## 主要接口
 
@@ -342,6 +399,71 @@ uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 - 修改和删除自己的文章
 - 未登录访问受保护接口
 - 使用另一个账号验证越权失败
+
+## 自动化测试
+
+安装开发依赖：
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+运行测试：
+
+```bash
+pytest
+```
+
+运行代码检查：
+
+```bash
+ruff check .
+```
+
+当前测试覆盖了：
+
+- 注册成功
+- 登录获取 token
+- 重复用户名校验
+- 错误密码登录失败
+- 未登录访问受保护接口
+- 分类创建
+- 文章创建、列表、详情、更新、删除
+- 非作者修改文章被拒绝
+- 阅读量自增
+
+## Docker 部署
+
+一条命令启动 FastAPI + MySQL：
+
+```bash
+docker compose up --build
+```
+
+启动后访问：
+
+- `http://127.0.0.1:8000/docs`
+- `http://127.0.0.1:8000/redoc`
+
+容器启动流程：
+
+1. 等待 MySQL 健康检查通过
+2. 执行 `alembic upgrade head`
+3. 启动 `uvicorn`
+
+## CI 持续集成
+
+仓库已提供 GitHub Actions 工作流：
+
+- 安装依赖
+- 运行 `ruff check .`
+- 运行 `pytest`
+
+工作流文件位置：
+
+```text
+.github/workflows/ci.yml
+```
 
 ## 面试演示 Checklist
 

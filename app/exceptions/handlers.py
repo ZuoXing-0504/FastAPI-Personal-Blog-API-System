@@ -6,7 +6,6 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 from starlette.requests import Request
 
-from app.core.config import settings
 from app.exceptions.custom import AppException
 
 

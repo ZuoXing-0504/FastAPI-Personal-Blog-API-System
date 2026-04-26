@@ -15,8 +15,9 @@ from app.exceptions.handlers import register_exception_handlers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create database tables on startup."""
-    Base.metadata.create_all(bind=engine)
+    """Run optional startup tasks for the FastAPI application."""
+    if settings.db_auto_create_tables:
+        Base.metadata.create_all(bind=engine)
     yield
 
 
