@@ -1,5 +1,7 @@
 """Global exception handlers."""
 
+import logging
+
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -7,6 +9,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from starlette.requests import Request
 
 from app.exceptions.custom import AppException
+
+logger = logging.getLogger("app.exception")
 
 
 def _normalize_validation_message(message: str) -> str:
@@ -26,6 +30,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         request: Request,
         exc: AppException,
     ) -> JSONResponse:
+        logger.warning("Business exception: %s", exc.message)
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -40,6 +45,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         request: Request,
         exc: HTTPException,
     ) -> JSONResponse:
+        logger.warning("HTTP exception: %s", exc.detail)
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -54,6 +60,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         request: Request,
         exc: RequestValidationError,
     ) -> JSONResponse:
+        logger.warning("Validation exception: %s", exc.errors())
         errors = [
             {
                 "field": ".".join(str(item) for item in error["loc"]),
@@ -75,6 +82,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         request: Request,
         exc: SQLAlchemyError,
     ) -> JSONResponse:
+        logger.exception("Database exception occurred")
         return JSONResponse(
             status_code=500,
             content={
@@ -89,6 +97,7 @@ def register_exception_handlers(app: FastAPI) -> None:
         request: Request,
         exc: Exception,
     ) -> JSONResponse:
+        logger.exception("Unhandled exception occurred")
         return JSONResponse(
             status_code=500,
             content={

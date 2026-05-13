@@ -7,16 +7,6 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user, get_db
 from app.core.response import build_page_response, build_response
-from app.crud.article import (
-    create_article,
-    delete_article,
-    get_article_by_id,
-    get_articles,
-    increment_article_view_count,
-    update_article,
-)
-from app.crud.category import get_category_by_id
-from app.exceptions.custom import AppException
 from app.models.user import User
 from app.schemas.article import (
     ArticleCreate,
@@ -25,18 +15,15 @@ from app.schemas.article import (
     ArticleUpdate,
 )
 from app.schemas.common import APIResponse, PageData
+from app.services.article import (
+    create_article_service,
+    delete_article_service,
+    list_articles_service,
+    read_article_service,
+    update_article_service,
+)
 
 router = APIRouter()
-
-
-def _ensure_article_owner(article_author_id: int, current_user_id: int) -> None:
-    """Ensure the current user owns the target article."""
-    if article_author_id != current_user_id:
-        raise AppException(
-            message="无权限操作该文章，仅作者本人可修改或删除",
-            status_code=403,
-            code=403,
-        )
 
 
 @router.post(
@@ -51,10 +38,7 @@ def create_article_endpoint(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """Create a new article for the current user."""
-    if not get_category_by_id(db, article_in.category_id):
-        raise AppException(message="分类不存在", status_code=404, code=404)
-
-    article = create_article(db, article_in, current_user.id)
+    article = create_article_service(db, article_in, current_user.id)
     return build_response(
         data=ArticleDetail.model_validate(article),
         msg="文章发布成功",
@@ -74,8 +58,8 @@ def list_articles(
     keyword: Optional[str] = Query(default=None, max_length=100),
     db: Session = Depends(get_db),
 ) -> dict:
-    """Return a paginated article list with optional category filtering."""
-    items, total = get_articles(
+    """Return a paginated article list with optional filters."""
+    items, total = list_articles_service(
         db,
         page=page,
         page_size=page_size,
@@ -99,11 +83,7 @@ def list_articles(
 )
 def read_article(article_id: int, db: Session = Depends(get_db)) -> dict:
     """Return a single article and increase its view count."""
-    article = get_article_by_id(db, article_id)
-    if not article:
-        raise AppException(message="文章不存在", status_code=404, code=404)
-
-    article = increment_article_view_count(db, article)
+    article = read_article_service(db, article_id)
     return build_response(
         data=ArticleDetail.model_validate(article),
         msg="查询文章详情成功",
@@ -122,16 +102,12 @@ def update_article_endpoint(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """Update an article. Only the author can modify it."""
-    article = get_article_by_id(db, article_id)
-    if not article:
-        raise AppException(message="文章不存在", status_code=404, code=404)
-
-    _ensure_article_owner(article.author_id, current_user.id)
-
-    if article_in.category_id is not None and not get_category_by_id(db, article_in.category_id):
-        raise AppException(message="分类不存在", status_code=404, code=404)
-
-    updated_article = update_article(db, article, article_in)
+    updated_article = update_article_service(
+        db,
+        article_id=article_id,
+        article_in=article_in,
+        current_user_id=current_user.id,
+    )
     return build_response(
         data=ArticleDetail.model_validate(updated_article),
         msg="文章修改成功",
@@ -149,10 +125,5 @@ def delete_article_endpoint(
     current_user: User = Depends(get_current_user),
 ) -> dict:
     """Delete an article. Only the author can delete it."""
-    article = get_article_by_id(db, article_id)
-    if not article:
-        raise AppException(message="文章不存在", status_code=404, code=404)
-
-    _ensure_article_owner(article.author_id, current_user.id)
-    delete_article(db, article)
+    delete_article_service(db, article_id=article_id, current_user_id=current_user.id)
     return build_response(msg="文章删除成功")

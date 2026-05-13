@@ -32,6 +32,11 @@ class Settings(BaseSettings):
     jwt_secret_key: str = "replace-with-a-secure-secret"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 120
+    refresh_token_expire_days: int = 7
+
+    log_level: str = "INFO"
+    log_dir: str = "logs"
+    enable_file_logging: bool = False
 
     cors_allow_origins: list[str] = Field(default_factory=lambda: ["*"])
     cors_allow_credentials: bool = True

@@ -9,7 +9,7 @@ services:
       MYSQL_USER: blog_user
       MYSQL_PASSWORD: blog_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -24,6 +24,8 @@ services:
       dockerfile: Dockerfile
     container_name: fastapi-blog-api
     restart: unless-stopped
+    volumes:
+      - app_logs:/app/logs
     depends_on:
       db:
         condition: service_healthy
@@ -37,9 +39,19 @@ services:
       MYSQL_PORT: 3306
       JWT_SECRET_KEY: change-this-in-production
       ACCESS_TOKEN_EXPIRE_MINUTES: 120
-      CORS_ALLOW_ORIGINS: ["*"]
+      REFRESH_TOKEN_EXPIRE_DAYS: 7
+      LOG_LEVEL: INFO
+      LOG_DIR: /app/logs
+      ENABLE_FILE_LOGGING: "true"
+      CORS_ALLOW_ORIGINS: '["*"]'
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
 volumes:
   mysql_data:
+  app_logs:

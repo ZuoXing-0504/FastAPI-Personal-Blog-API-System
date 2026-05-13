@@ -97,7 +97,10 @@ def delete_article(db: Session, article: Article) -> None:
 
 def increment_article_view_count(db: Session, article: Article) -> Article:
     """Increase article view count by one and return the fresh record."""
-    article.view_count += 1
+    db.query(Article).filter(Article.id == article.id).update(
+        {Article.view_count: Article.view_count + 1},
+        synchronize_session=False,
+    )
     db.commit()
-    db.refresh(article)
+    db.expire_all()
     return get_article_by_id(db, article.id)

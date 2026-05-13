@@ -6,7 +6,7 @@ from app.schemas.article import (
     ArticleListItem,
     ArticleUpdate,
 )
-from app.schemas.auth import LoginResponseData
+from app.schemas.auth import LoginResponseData, LogoutRequest, RefreshTokenRequest
 from app.schemas.category import CategoryCreate, CategoryRead, CategoryUpdate
 from app.schemas.common import APIResponse, PageData
 from app.schemas.user import UserCreate, UserLogin, UserPublic, UserSummary
@@ -19,6 +19,8 @@ __all__ = [
     "UserPublic",
     "UserSummary",
     "LoginResponseData",
+    "RefreshTokenRequest",
+    "LogoutRequest",
     "CategoryCreate",
     "CategoryUpdate",
     "CategoryRead",

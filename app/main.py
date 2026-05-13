@@ -7,10 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.api import api_router
 from app.core.config import settings
+from app.core.logging import configure_logging
 from app.core.response import build_response
 from app.db.base import Base
 from app.db.database import engine
 from app.exceptions.handlers import register_exception_handlers
+from app.middleware.request_context import RequestContextMiddleware
 
 
 @asynccontextmanager
@@ -23,12 +25,13 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
+    configure_logging()
     app = FastAPI(
         title=settings.app_name,
         version=settings.app_version,
         description=(
             "A personal blog backend project built with FastAPI, MySQL, "
-            "SQLAlchemy, JWT authentication, and unified engineering practices."
+            "SQLAlchemy, JWT authentication, refresh tokens, and service-based architecture."
         ),
         docs_url=settings.docs_url,
         redoc_url=settings.redoc_url,
@@ -43,6 +46,7 @@ def create_app() -> FastAPI:
         allow_methods=settings.cors_allow_methods,
         allow_headers=settings.cors_allow_headers,
     )
+    app.add_middleware(RequestContextMiddleware)
 
     register_exception_handlers(app)
     app.include_router(api_router, prefix=settings.api_v1_prefix)

@@ -65,6 +65,7 @@ def test_article_crud_flow_and_permissions(client: TestClient) -> None:
         f"/api/v1/articles?page=1&page_size=10&category_id={category_id}",
     )
     assert list_response.status_code == 200
+    assert list_response.headers["X-Request-ID"]
     list_body = list_response.json()
     assert list_body["data"]["total"] == 1
     assert list(list_body["data"]["items"][0].keys()) == [

@@ -55,3 +55,22 @@ CREATE TABLE IF NOT EXISTS `articles` (
         FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
         ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Refresh token table
+CREATE TABLE IF NOT EXISTS `refresh_tokens` (
+    `id` INT NOT NULL AUTO_INCREMENT,
+    `token_id` VARCHAR(64) NOT NULL,
+    `user_id` INT NOT NULL,
+    `expires_at` DATETIME NOT NULL,
+    `revoked_at` DATETIME NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_refresh_tokens_token_id` (`token_id`),
+    KEY `idx_refresh_tokens_token_id` (`token_id`),
+    KEY `idx_refresh_tokens_user_id` (`user_id`),
+    KEY `idx_refresh_tokens_expires_at` (`expires_at`),
+    CONSTRAINT `fk_refresh_tokens_user_id`
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
