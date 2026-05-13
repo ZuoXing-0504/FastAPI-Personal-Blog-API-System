@@ -18,8 +18,9 @@ COPY alembic.ini .
 COPY main.py .
 COPY .env.example .
 
-RUN chmod +x docker/start.sh
+RUN sed -i 's/\r$//' docker/start.sh \
+    && chmod +x docker/start.sh
 
 EXPOSE 8000
 
-CMD ["./docker/start.sh"]
+CMD ["/bin/sh", "./docker/start.sh"]

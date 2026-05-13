@@ -10,34 +10,39 @@
 
 ## Overview
 
-This repository is a FastAPI-based personal blog backend project designed for coursework, backend practice, and internship interview demos. It focuses on common backend engineering capabilities instead of only basic CRUD.
+This repository is a full-stack personal blog project built for coursework, backend practice, frontend showcase, and internship interview demos.
 
-The project includes:
+It includes:
 
-- User registration and login
-- JWT access token authentication
-- Refresh token rotation and logout revocation
-- Author-only article update and delete permissions
-- Category management and article-category binding
-- Pagination, category filtering, and article view count
-- Unified response format and global exception handling
-- Pydantic request validation
-- Alembic database migrations
-- Pytest API tests
-- Docker Compose deployment
+- A FastAPI backend API system
+- A Next.js frontend workspace
+- MySQL 8.0 data persistence
+- Docker Compose one-command startup for the full stack
+- Alembic migrations
+- Pytest-based backend tests
 - GitHub Actions CI
 
 ## Tech Stack
 
+### Backend
+
 - Python 3.9+
 - FastAPI
-- MySQL 8.0
 - SQLAlchemy ORM
-- Pydantic
+- MySQL 8.0
 - PyJWT
+- Pydantic
 - Alembic
-- Pytest
-- Docker / Docker Compose
+
+### Frontend
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- TanStack Query
+- Zustand
+- Motion
 
 ## Project Structure
 
@@ -56,6 +61,9 @@ The project includes:
 │   └── services
 ├── docker
 ├── docs
+├── frontend
+│   ├── public
+│   └── src
 ├── sql
 └── tests
 ```
@@ -76,7 +84,7 @@ The project includes:
 - Create, list, retrieve, update, and delete articles
 - Only the author can update or delete an article
 - Article list supports pagination
-- Article list supports filtering by category
+- Article list supports category filtering
 - Article detail automatically increments view count
 
 ### Category Module
@@ -92,24 +100,39 @@ The project includes:
 - Request validation with friendly error messages
 - Request logging with `X-Request-ID`
 - Service layer for business logic separation
+- Full-stack Docker Compose startup
 
-## API Documentation
+## Quick Start
 
-After the service starts:
+If you want the fastest way to run the whole project, use Docker Compose:
 
+```bash
+docker compose up -d --build
+```
+
+After startup:
+
+- Frontend: `http://127.0.0.1:3000`
+- Backend API: `http://127.0.0.1:8000`
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
+- MySQL on host: `127.0.0.1:3307`
 
-## Local Run
+Stop all services:
 
-1. Create and activate a virtual environment.
-2. Install dependencies.
-3. Create MySQL database.
-4. Configure `.env`.
-5. Run Alembic migrations.
-6. Start the service.
+```bash
+docker compose down
+```
 
-Example:
+## Run Modes
+
+This repository supports two main ways to run the project.
+
+### Mode 1: Local Development
+
+Use this mode when you are actively writing code and want hot reload.
+
+Backend:
 
 ```bash
 python -m venv .venv
@@ -119,37 +142,107 @@ alembic upgrade head
 uvicorn main:app --reload
 ```
 
-## Docker Run
+Frontend:
 
-Start the full stack:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Addresses in local development mode:
+
+- Frontend: `http://127.0.0.1:3000`
+- Backend API: `http://127.0.0.1:8000`
+- Frontend browser-side API base: `/backend`
+
+### Mode 2: Docker One-Command Startup
+
+Use this mode when you want a clean demo environment or full-stack startup with one command.
 
 ```bash
 docker compose up -d --build
 ```
 
-Current Docker mapping in this repository:
+Addresses in Docker mode:
 
-- API: `127.0.0.1:8000`
-- MySQL container: host `3307` -> container `3306`
+- Frontend: `http://127.0.0.1:3000`
+- Backend API: `http://127.0.0.1:8000`
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- MySQL on host: `127.0.0.1:3307`
 
-Stop services:
+Useful Docker commands:
 
 ```bash
+docker compose ps
+docker compose logs -f
 docker compose down
 ```
 
+## API Documentation
+
+After the backend starts:
+
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
+
+## Frontend Workspace
+
+The frontend code lives in:
+
+- `frontend/`
+
+Its dedicated usage notes are in:
+
+- `frontend/README.md`
+
+## Backend-Only Local Run
+
+If you only want to run the backend locally:
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn main:app --reload
+```
+
+## Full-Stack Docker Services
+
+The root-level Docker Compose stack includes:
+
+- `db`: MySQL 8.0
+- `api`: FastAPI backend
+- `frontend`: Next.js frontend
+
+Port mapping:
+
+- Frontend: `3000 -> 3000`
+- Backend API: `8000 -> 8000`
+- MySQL: `3307 -> 3306`
+
 ## Testing
 
-Run automated checks locally:
+Backend checks:
 
 ```bash
 ruff check .
 pytest
 ```
 
+Frontend checks:
+
+```bash
+cd frontend
+npm run lint
+npm run typecheck
+npm run build
+```
+
 ## Database Migration
 
-Apply the latest schema changes:
+Apply the latest backend schema changes:
 
 ```bash
 alembic upgrade head
@@ -157,18 +250,19 @@ alembic upgrade head
 
 ## Demo Flow
 
-You can use this project to demonstrate a complete backend workflow:
+You can use this project to demonstrate a complete full-stack workflow:
 
 1. Register a user
 2. Log in and obtain tokens
-3. Create a category
-4. Publish an article
-5. Query article list with pagination and category filter
-6. Read article detail and verify view count growth
-7. Update your own article
-8. Delete your own article
-9. Use another account to verify author-only permission restrictions
-10. Verify anonymous requests are blocked on protected endpoints
+3. Browse the frontend homepage
+4. Create a category
+5. Publish an article
+6. Query article list with pagination and category filter
+7. Read article detail and verify view count growth
+8. Update your own article
+9. Delete your own article
+10. Use another account to verify author-only permission restrictions
+11. Verify anonymous requests are blocked on protected endpoints
 
 ## License
 
