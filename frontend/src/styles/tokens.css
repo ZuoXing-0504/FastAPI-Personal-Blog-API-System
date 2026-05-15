@@ -15,6 +15,7 @@
   --shadow-panel: 0 24px 80px rgba(15, 23, 42, 0.08);
   --shadow-card: 0 16px 48px rgba(15, 23, 42, 0.06);
   --shadow-focus: 0 0 0 4px rgba(31, 79, 255, 0.14);
+  --shadow-deep: 0 32px 90px rgba(15, 23, 42, 0.14);
 }
 
 @theme inline {
@@ -31,15 +32,16 @@
   --color-accent-soft: var(--accent-soft);
   --color-success: var(--success);
   --color-danger: var(--danger);
-  --font-sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-    sans-serif;
-  --font-display: "Inter", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", sans-serif;
-  --font-mono: "JetBrains Mono", "Cascadia Code", "SFMono-Regular",
-    "Consolas", monospace;
+  --font-sans:
+    "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-display:
+    "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-mono:
+    "JetBrains Mono", "Cascadia Code", "SFMono-Regular", "Consolas", monospace;
   --radius-panel: 2rem;
   --radius-card: 1.5rem;
   --radius-pill: 999px;
   --shadow-panel: var(--shadow-panel);
   --shadow-card: var(--shadow-card);
+  --shadow-deep: var(--shadow-deep);
 }

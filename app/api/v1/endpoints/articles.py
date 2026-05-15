@@ -81,9 +81,13 @@ def list_articles(
     response_model=APIResponse[ArticleDetail],
     summary="查看文章详情",
 )
-def read_article(article_id: int, db: Session = Depends(get_db)) -> dict:
-    """Return a single article and increase its view count."""
-    article = read_article_service(db, article_id)
+def read_article(
+    article_id: int,
+    track_view: bool = Query(default=True),
+    db: Session = Depends(get_db),
+) -> dict:
+    """Return a single article and optionally increase its view count."""
+    article = read_article_service(db, article_id, track_view=track_view)
     return build_response(
         data=ArticleDetail.model_validate(article),
         msg="查询文章详情成功",

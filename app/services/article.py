@@ -43,12 +43,19 @@ def list_articles_service(
     )
 
 
-def read_article_service(db: Session, article_id: int) -> Article:
-    """Return an article detail record and increase its view count."""
+def read_article_service(
+    db: Session,
+    article_id: int,
+    *,
+    track_view: bool = True,
+) -> Article:
+    """Return an article detail record and optionally increase its view count."""
     article = get_article_by_id(db, article_id)
     if not article:
         raise AppException(message="文章不存在", status_code=404, code=404)
-    return increment_article_view_count(db, article)
+    if track_view:
+        return increment_article_view_count(db, article)
+    return article
 
 
 def update_article_service(

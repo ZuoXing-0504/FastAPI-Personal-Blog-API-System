@@ -85,6 +85,10 @@ def test_article_crud_flow_and_permissions(client: TestClient) -> None:
     assert second_detail_response.status_code == 200
     assert second_detail_response.json()["data"]["view_count"] == 2
 
+    edit_preview_response = client.get(f"/api/v1/articles/{article_id}?track_view=false")
+    assert edit_preview_response.status_code == 200
+    assert edit_preview_response.json()["data"]["view_count"] == 2
+
     update_response = client.put(
         f"/api/v1/articles/{article_id}",
         json={"title": "FastAPI project demo article updated"},

@@ -3,26 +3,23 @@
 [![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org/)
-[![JWT](https://img.shields.io/badge/Auth-JWT-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-149ECA?logo=react&logoColor=white)](https://react.dev/)
 [![CI](https://img.shields.io/github/actions/workflow/status/ZuoXing-0504/FastAPI-Personal-Blog-API-System/ci.yml?branch=main&label=CI)](https://github.com/ZuoXing-0504/FastAPI-Personal-Blog-API-System/actions)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 
 ## Overview
 
-This repository is a full-stack personal blog project built for coursework, backend practice, frontend showcase, and internship interview demos.
+This repository is a full-stack blog project built for:
 
-It includes:
+- backend practice
+- frontend showcase
+- Docker deployment demos
+- internship interview presentation
 
-- A FastAPI backend API system
-- A Next.js frontend workspace
-- MySQL 8.0 data persistence
-- Docker Compose one-command startup for the full stack
-- Alembic migrations
-- Pytest-based backend tests
-- GitHub Actions CI
+It combines a production-style FastAPI backend with a modern Next.js frontend.
 
-## Tech Stack
+## Stack
 
 ### Backend
 
@@ -33,6 +30,7 @@ It includes:
 - PyJWT
 - Pydantic
 - Alembic
+- Pytest
 
 ### Frontend
 
@@ -43,29 +41,30 @@ It includes:
 - TanStack Query
 - Zustand
 - Motion
+- Sonner
 
 ## Project Structure
 
 ```text
 .
-├── alembic
-├── app
-│   ├── api
-│   ├── core
-│   ├── crud
-│   ├── db
-│   ├── exceptions
-│   ├── middleware
-│   ├── models
-│   ├── schemas
-│   └── services
-├── docker
-├── docs
-├── frontend
-│   ├── public
-│   └── src
-├── sql
-└── tests
+├─ alembic
+├─ app
+│  ├─ api
+│  ├─ core
+│  ├─ crud
+│  ├─ db
+│  ├─ exceptions
+│  ├─ middleware
+│  ├─ models
+│  ├─ schemas
+│  └─ services
+├─ docker
+├─ docs
+├─ frontend
+│  ├─ public
+│  └─ src
+├─ sql
+└─ tests
 ```
 
 ## Core Features
@@ -77,15 +76,15 @@ It includes:
 - Login returns `access_token` and `refresh_token`
 - Refresh endpoint rotates refresh tokens
 - Logout revokes refresh tokens
-- Protected endpoints require a valid access token
+- Protected write operations require a valid JWT access token
 
 ### Article Module
 
 - Create, list, retrieve, update, and delete articles
 - Only the author can update or delete an article
-- Article list supports pagination
-- Article list supports category filtering
-- Article detail automatically increments view count
+- List supports pagination and category filtering
+- Public detail page increments view count
+- Studio edit page reads detail without increasing public view count
 
 ### Category Module
 
@@ -93,18 +92,32 @@ It includes:
 - List categories
 - Bind articles to categories
 
+### Frontend Experience
+
+- Editorial-style homepage
+- Public article list and article detail pages
+- Public category showcase page
+- Register and login pages wired to the real backend
+- Persisted auth session with refresh-token retry
+- Protected author studio
+- Article CRUD in the studio
+- Category management in the studio
+- Profile page backed by `/users/me`
+
 ### Engineering Features
 
 - Unified response format: `code`, `msg`, `data`
 - Global exception handling
-- Request validation with friendly error messages
+- Request validation with friendly errors
 - Request logging with `X-Request-ID`
-- Service layer for business logic separation
-- Full-stack Docker Compose startup
+- Service layer for backend business logic
+- Docker Compose one-command startup
+- Backend tests and CI
+- Frontend lint, typecheck, and production build checks
 
 ## Quick Start
 
-If you want the fastest way to run the whole project, use Docker Compose:
+The fastest way to run the full stack is:
 
 ```bash
 docker compose up -d --build
@@ -118,7 +131,7 @@ After startup:
 - ReDoc: `http://127.0.0.1:8000/redoc`
 - MySQL on host: `127.0.0.1:3307`
 
-Stop all services:
+Stop everything:
 
 ```bash
 docker compose down
@@ -126,11 +139,9 @@ docker compose down
 
 ## Run Modes
 
-This repository supports two main ways to run the project.
-
 ### Mode 1: Local Development
 
-Use this mode when you are actively writing code and want hot reload.
+Use this when you want hot reload while coding.
 
 Backend:
 
@@ -150,34 +161,66 @@ npm install
 npm run dev
 ```
 
-Addresses in local development mode:
+Local addresses:
 
 - Frontend: `http://127.0.0.1:3000`
 - Backend API: `http://127.0.0.1:8000`
-- Frontend browser-side API base: `/backend`
+- Browser-side API base: `/backend`
 
 ### Mode 2: Docker One-Command Startup
 
-Use this mode when you want a clean demo environment or full-stack startup with one command.
+Use this when you want a clean demo environment.
 
 ```bash
 docker compose up -d --build
 ```
 
-Addresses in Docker mode:
-
-- Frontend: `http://127.0.0.1:3000`
-- Backend API: `http://127.0.0.1:8000`
-- Swagger UI: `http://127.0.0.1:8000/docs`
-- MySQL on host: `127.0.0.1:3307`
-
-Useful Docker commands:
+Useful commands:
 
 ```bash
 docker compose ps
 docker compose logs -f
 docker compose down
 ```
+
+## Frontend Page Map
+
+### Public Pages
+
+- `/`
+- `/articles`
+- `/articles/[id]`
+- `/categories`
+- `/login`
+- `/register`
+
+### Protected Studio Pages
+
+- `/studio`
+- `/studio/articles`
+- `/studio/articles/new`
+- `/studio/articles/[id]/edit`
+- `/studio/categories`
+- `/studio/profile`
+
+## Demo Flow
+
+This project can now demonstrate a full end-to-end workflow:
+
+1. Start the full stack with Docker Compose
+2. Open the homepage and browse the public UI
+3. Open the article list and category page
+4. Register a new user from the frontend
+5. Log in and enter the protected studio
+6. Create a category in `/studio/categories`
+7. Create a new article in `/studio/articles/new`
+8. Return to the public article list and verify it appears
+9. Open the public article detail page and verify view count increases
+10. Re-open the same article in the studio editor and verify edit reads do not inflate public views
+11. Edit your own article
+12. Delete your own article
+13. Log out and verify protected routes redirect back to `/login`
+14. Use another account to verify author-only restrictions
 
 ## API Documentation
 
@@ -186,41 +229,37 @@ After the backend starts:
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
 
-## Frontend Workspace
+## Screenshot Guide
 
-The frontend code lives in:
+If you want to present this repository in a README, report, or interview deck, these are the most useful screenshots to capture:
 
-- `frontend/`
+### Frontend Screenshots
 
-Its dedicated usage notes are in:
+1. Homepage hero section
+2. Public article list with filters
+3. Public article detail page
+4. Login page
+5. Studio dashboard
+6. Studio article list
+7. New article editor
+8. Category management page
+9. Profile page
 
-- `frontend/README.md`
+### Backend Screenshots
 
-## Backend-Only Local Run
+1. Swagger UI overview
+2. Register endpoint example
+3. Login response showing token structure
+4. Protected article create endpoint
+5. Author-only update or delete response
+6. Refresh token endpoint
 
-If you only want to run the backend locally:
+Suggested caption style:
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-alembic upgrade head
-uvicorn main:app --reload
-```
-
-## Full-Stack Docker Services
-
-The root-level Docker Compose stack includes:
-
-- `db`: MySQL 8.0
-- `api`: FastAPI backend
-- `frontend`: Next.js frontend
-
-Port mapping:
-
-- Frontend: `3000 -> 3000`
-- Backend API: `8000 -> 8000`
-- MySQL: `3307 -> 3306`
+- "Homepage with editorial-style landing section"
+- "Protected studio article management page"
+- "Swagger UI for FastAPI backend endpoints"
+- "JWT login response and refresh-token workflow"
 
 ## Testing
 
@@ -242,27 +281,17 @@ npm run build
 
 ## Database Migration
 
-Apply the latest backend schema changes:
+Apply the latest schema:
 
 ```bash
 alembic upgrade head
 ```
 
-## Demo Flow
+## Frontend Workspace
 
-You can use this project to demonstrate a complete full-stack workflow:
+Frontend-specific usage notes live in:
 
-1. Register a user
-2. Log in and obtain tokens
-3. Browse the frontend homepage
-4. Create a category
-5. Publish an article
-6. Query article list with pagination and category filter
-7. Read article detail and verify view count growth
-8. Update your own article
-9. Delete your own article
-10. Use another account to verify author-only permission restrictions
-11. Verify anonymous requests are blocked on protected endpoints
+- `frontend/README.md`
 
 ## License
 
